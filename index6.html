@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Handsome Husband</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Lato',sans-serif;
+    min-height:100vh; overflow-x:hidden;
+    background: linear-gradient(135deg,#fde8f0 0%,#e8d5f5 25%,#d5e8f5 50%,#f5d5e8 75%,#fde8f0 100%);
+    background-size:400% 400%;
+    animation:gradientShift 12s ease infinite;
+    color:#5a2d4a;
+  }
+  @keyframes gradientShift {
+    0%   {background-position:0% 50%;}
+    50%  {background-position:100% 50%;}
+    100% {background-position:0% 50%;}
+  }
+  @keyframes fadeIn {
+    from{opacity:0;transform:translateY(22px);}
+    to  {opacity:1;transform:translateY(0);}
+  }
+  @keyframes float {
+    0%,100%{transform:translateY(0);}
+    50%    {transform:translateY(-10px);}
+  }
+  @keyframes heartbeat {
+    0%,100%{transform:scale(1);}
+    50%    {transform:scale(1.15);}
+  }
+  @keyframes fall {
+    0%  {top:-30px;opacity:.8;}
+    100%{top:110vh; opacity:0;}
+  }
+  @keyframes slideIn {
+    from{opacity:0;transform:translateX(-18px);}
+    to  {opacity:1;transform:translateX(0);}
+  }
+  @keyframes photoFade {
+    from{opacity:0;transform:scale(0.95);}
+    to  {opacity:1;transform:scale(1);}
+  }
+  @keyframes spin {
+    from{transform:rotate(0deg);}
+    to  {transform:rotate(360deg);}
+  }
+
+  .hearts-bg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden;}
+  .falling-heart{position:absolute;animation:fall linear infinite;}
+
+  .page{
+    display:none; min-height:100vh; width:100%;
+    flex-direction:column; align-items:center; justify-content:center;
+    padding:40px 20px 90px; text-align:center;
+    animation:fadeIn .9s ease; position:relative;
+  }
+  .page.active{display:flex;}
+  .content{position:relative;z-index:2;max-width:680px;width:100%;}
+
+  h1{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,5vw,3rem);color:#8b2252;margin-bottom:16px;line-height:1.3;}
+  h2{font-family:'Playfair Display',serif;font-size:clamp(1.3rem,4vw,2.2rem);color:#7a3070;margin-bottom:14px;}
+  p {font-size:clamp(.93rem,2.4vw,1.08rem);color:#6b3560;line-height:1.9;margin-bottom:12px;}
+
+  .heart-icon{font-size:4rem;animation:heartbeat 1.5s ease infinite,float 3s ease infinite;display:block;margin-bottom:18px;}
+  .big-heart  {font-size:5rem;animation:heartbeat 1s ease infinite;display:block;margin-bottom:14px;}
+  .divider{width:80px;height:2px;background:linear-gradient(to right,transparent,#d4709a,transparent);margin:18px auto;}
+
+  .glass{
+    background:rgba(255,255,255,.55);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,.8);
+    border-radius:24px; padding:26px 30px; margin:16px 0;
+    box-shadow:0 8px 32px rgba(180,100,160,.12);
+  }
+
+  .btn-group{display:flex;gap:18px;justify-content:center;margin-top:26px;flex-wrap:wrap;}
+  .btn-yes{
+    background:linear-gradient(135deg,#e8739a,#c0397a);
+    color:#fff; border:none; padding:13px 38px; border-radius:50px;
+    font-size:1rem;font-family:'Lato',sans-serif;font-weight:700;
+    cursor:pointer; transition:all .3s;
+    box-shadow:0 4px 18px rgba(200,60,120,.35);
+  }
+  .btn-yes:hover{transform:scale(1.08);box-shadow:0 6px 24px rgba(200,60,120,.55);}
+  .btn-no{
+    background:rgba(255,255,255,.6); color:#b07090;
+    border:2px solid #d4a0b8; padding:13px 38px; border-radius:50px;
+    font-size:1rem;font-family:'Lato',sans-serif;font-weight:700;
+    cursor:pointer; transition:all .3s;
+  }
+  .btn-no:hover{background:rgba(255,220,235,.7);}
+
+  .warning-box{
+    background:rgba(255,200,215,.5); border:1px solid #e8a0b8;
+    border-radius:16px; padding:15px 20px; margin-top:16px;
+    display:none; animation:slideIn .4s ease;
+  }
+  .warning-box p{color:#a03060;font-size:.92rem;margin:0;line-height:1.7;}
+  .no-option-warning{
+    background:rgba(255,200,215,.4); border:1px dashed #e090b0;
+    border-radius:14px; padding:13px 18px; margin-top:14px;
+    display:none; animation:slideIn .4s ease;
+    font-size:.92rem; color:#a03060; line-height:1.7;
+  }
+
+  .music-note{font-size:3rem;animation:spin 4s linear infinite;display:inline-block;margin-bottom:14px;}
+
+  /* photos */
+  .photo-stage{width:100%;max-width:300px;margin:0 auto 10px;}
+  .photo-frame{
+    position:absolute;inset:0; border-radius:22px;
+    border:3px solid rgba(255,255,255,.9); overflow:hidden;
+    box-shadow:0 10px 36px rgba(180,80,140,.2);
+    opacity:0; transition:opacity .8s ease; pointer-events:none;
+  }
+  .photo-frame.active{opacity:1;animation:photoFade .8s ease;pointer-events:auto;}
+  .photo-placeholder{
+    width:100%;height:100%;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:8px;
+    background:linear-gradient(135deg,rgba(255,220,235,.7),rgba(220,200,250,.7));
+    color:#a06080;
+  }
+  .photo-placeholder .emoji{font-size:3.2rem;}
+  .photo-placeholder p{font-size:.8rem;color:#a06080;margin:0;}
+  .photo-dots{display:flex;gap:7px;justify-content:center;margin:8px 0 4px;}
+  .photo-dot{width:8px;height:8px;border-radius:50%;background:rgba(180,100,150,.25);transition:all .3s;cursor:pointer;}
+  .photo-dot.active{background:#d4709a;transform:scale(1.5);}
+  .photo-counter{font-size:.8rem;color:#a080a0;margin-bottom:6px;}
+
+  .loving-msg{
+    background:rgba(255,255,255,.5); border-left:3px solid #d4709a;
+    border-radius:0 16px 16px 0; padding:20px 24px; margin-top:16px;
+    text-align:left; backdrop-filter:blur(6px);
+  }
+
+  .thankyou-box{
+    background:rgba(255,220,235,.5); border:1px solid #e8a0c0;
+    border-radius:24px; padding:30px; margin:20px 0 0;
+    display:none; animation:fadeIn 1s ease;
+  }
+  .stars{font-size:2rem;letter-spacing:8px;margin-bottom:14px;}
+
+  .love-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0;}
+  .love-card{
+    background:rgba(255,255,255,.55); border:1px solid rgba(255,255,255,.8);
+    border-radius:16px; padding:18px 14px; backdrop-filter:blur(6px);
+  }
+  .love-card .emoji{font-size:2rem;margin-bottom:7px;}
+  .love-card p{font-size:.82rem;color:#7a4060;margin:0;line-height:1.6;}
+
+  .sparkle{position:absolute;animation:float 2.5s ease infinite;font-size:1.3rem;opacity:.55;pointer-events:none;}
+
+  .page-indicator{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:9px;z-index:10;}
+  .dot{width:9px;height:9px;border-radius:50%;background:rgba(200,120,160,.3);transition:all .3s;}
+  .dot.active{background:#d4709a;transform:scale(1.5);}
+
+  .music-bar{
+    position:fixed;top:14px;right:16px;z-index:20;
+    background:rgba(255,255,255,.65); border:1px solid rgba(255,255,255,.9);
+    border-radius:30px; padding:7px 16px;
+    display:flex; align-items:center; gap:8px;
+    backdrop-filter:blur(8px); box-shadow:0 2px 12px rgba(180,80,140,.15);
+    cursor:pointer; font-size:.82rem; color:#8b4068; transition:all .3s;
+  }
+  .music-bar:hover{background:rgba(255,220,235,.75);}
+  .music-bar .note{font-size:1rem;animation:spin 3s linear infinite;}
+
+  @media(max-width:480px){
+    .love-cards{grid-template-columns:1fr;}
+    .btn-group{flex-direction:column;align-items:center;}
+    .btn-yes,.btn-no{width:84%;}
+  }
+</style>
+</head>
+<body>
+
+<div class="hearts-bg" id="heartsBg"></div>
+
+<!-- Music toggle -->
+<div class="music-bar" id="musicBar" onclick="toggleMusic()">
+  <span class="note" id="musicNote">&#127925;</span>
+  <span id="musicLabel">Tap to play Pal</span>
+</div>
+
+<!--
+  ==== MUSIC SETUP ====
+  1. Download "Pal" by Arijit Singh as MP3
+  2. Rename the file to: pal.mp3
+  3. Put pal.mp3 in the SAME FOLDER as this index.html
+  4. Done! Music starts automatically on Page 2.
+-->
+<audio id="bgMusic" loop>
+  <source src="pal.mp3" type="audio/mpeg">
+</audio>
+
+<div class="page-indicator">
+  <div class="dot active" id="dot-0"></div>
+  <div class="dot" id="dot-1"></div>
+  <div class="dot" id="dot-2"></div>
+  <div class="dot" id="dot-3"></div>
+  <div class="dot" id="dot-4"></div>
+</div>
+
+
+<!-- PAGE 1 -->
+<div class="page active" id="page-1">
+  <div class="content">
+    <span class="sparkle" style="top:8%;left:5%">&#x2728;</span>
+    <span class="sparkle" style="top:12%;right:7%;animation-delay:.9s">&#x1F338;</span>
+    <span class="sparkle" style="bottom:20%;left:4%;animation-delay:.5s">&#x1F4AB;</span>
+    <span class="sparkle" style="bottom:16%;right:6%;animation-delay:1.4s">&#x1F337;</span>
+    <span class="heart-icon">&#x1F48C;</span>
+    <h1>Hey, My Handsome Husband...😘😘</h1>
+    <div class="divider"></div>
+    <div class="glass">
+      <p style="font-size:1.1rem;font-style:italic;color:#7a3060;">welcome to our little world😊 made with love,only for you😘</p>
+      <p style="font-size:1.15rem;margin-top:8px;"><strong style="color:#c0396a;">Are you the most important person in my life? &#x1F495;</strong></p>
+      <p style="font-size:.88rem;color:#b090a0;margin-top:4px;">(Hint: There is only ONE correct answer here. &#x1F440;)</p>
+    </div>
+    <div class="btn-group">
+      <button class="btn-yes" onclick="goNext(1)">&#x1F496; YES, of course!</button>
+      <button class="btn-no"  onclick="showWarning(1)">No...</button>
+    </div>
+    <div class="warning-box" id="warn-1">
+      <p>&#x1F610; Excuse me?? tumko mujhse door jana h.😂<br>chupchap yes press karo <strong>Try again. &#x1F624;</strong></p>
+    </div>
+  </div>
+</div>
+
+
+<!-- PAGE 2 -->
+<div class="page" id="page-2">
+  <div class="content">
+    <div class="music-note">&#x1F3B5;</div>
+    <h2>my favourite Song For You😘❤️...</h2>
+    <div class="divider"></div>
+    <p style="font-size:.88rem;color:#a080a0;margin-bottom:4px;">&#x1F3B6; "Pal" by Arijit Singh is now playing just for you babu😊...</p>
+    <div class="glass" style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(.93rem,2.4vw,1.12rem);color:#7a3060;line-height:2.1;text-align:left;">
+      "thankyou for being my happiness,my stength,and my safest place.<br>every moment with you😘is special to me.<br>i love you forever.<br>thankyou for coming into my life❤️ and making my life full with smile 😊😊<br> everything before you feels like <em>buffering</em>. &#x1F300;<br><br>
+      You are not just my husband..<br>you are my whole world😊<br>My home. &#x1F3E1;<br><br>
+      no matter how difficult life gets, I am always with You😘❤️<br>because home is not a place anymore.. its You😘❤️ &#x1F3B6;"
+    </div>
+    <p style="font-size:1rem;color:#c0396a;margin-top:6px;">Do you feel the music? &#x1F3B5;</p>
+    <div class="btn-group">
+      <button class="btn-yes" onclick="goNext(2)">&#x1F495; Yes, thankyou so much mella bacha😊😘</button>
+      <button class="btn-no"  onclick="showWarning(2)">Not really...</button>
+    </div>
+    <div class="warning-box" id="warn-2">
+      <p>mella betu. &#x1F629;<br>nn betu maine NO ka koi option hi nhirakha h.😂<br>chalo yes press karo😜 &#x1F494;<br><strong>Try pressing YES. The pretty pink button. &#x1F611;</strong></p>
+    </div>
+  </div>
+</div>
+
+
+<!-- PAGE 3 -->
+<div class="page" id="page-3">
+  <div class="content">
+    <h2>Our Beautiful Memories Duu...❤️ &#x1F4F8;</h2>
+    <div class="divider"></div>
+    <p style="font-size:.88rem;color:#a080a0;">Every picture tells our story... (photos change every 3 seconds)</p>
+
+    <div class="photo-stage" style="height:auto;">
+      <div style="width:100%;border-radius:22px;overflow:hidden;border:3px solid rgba(255,255,255,.9);box-shadow:0 10px 36px rgba(180,80,140,.2);aspect-ratio:1/1;background:linear-gradient(135deg,rgba(255,220,235,.7),rgba(220,200,250,.7));">
+        <img id="activePhoto" src="photo-0.jpg" style="width:100%;height:100%;object-fit:cover;display:block;transition:opacity .6s ease;">
+      </div>
+      <div class="photo-dots" id="photoDots"></div>
+      <div class="photo-counter" id="photoCounter">Photo 1 of 18</div>
+    </div>
+    
+    <div class="loving-msg">
+      <p>these pictures are not just memories ❤️<br>they are the moments, where my heart felt the happiest with you😘every smile😍, every look, every little moment with you became a beautiful part of my life.<br>mere patidev jii..❤️❤️aap meri life ke sabse important person h jise main kabhi khona nhi chahti.😘😊<br>aap jis tarh se mera dhyan rakhte ho mujhe pyar karte ho...usse mera pyaar aur bhi bhadhta ja rha h ❤️❤️<br> aapki smile meri life ki sabse khoobsoorat cheez h kyoki jab aap muskurate ho to meri poori duniya smile karne lagti h.😘😘aur jab aap naraz hote ho to meri poori duniya naraj ho jati h. ☹️🙁<br>aur aapki ankhe mujhe bahut pasand h kyoki wo mujhe hamesha pyaar bhari nazro se dekhti h.<br>aapne mere liye iss duniya ka best husband banke dikhaya h, ❤️main bhi  apki pyari si wife banke dikhaungi 😘😘😘.mujhe itna pyar karne ke liye thankyou so muchh..❤️❤️❤️ &#x1F319;</p>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-yes" onclick="goNext(3)">&#x1F496; I love you so muchh..❤️❤️</button>
+      <button class="btn-no"  onclick="showWarning(3)">NO..☹️</button>
+    </div>
+    <div class="warning-box" id="warn-3">
+      <p>Aree...?? &#x1F643;<br>phir se NO press kiya tumko bahut marenge...😡😡 <strong>NO..☹️ </strong>??<br><strong>press only yess babuu...😂😂 &#x1F624;&#x1F494;</strong></p>
+    </div>
+  </div>
+</div>
+
+
+<!-- PAGE 4 -->
+<div class="page" id="page-4">
+  <div class="content">
+    <span class="big-heart">&#x1F48D;</span>
+    <h1>My Most Important Question...</h1>
+    <div class="divider"></div>
+    <div class="glass" style="text-align:left;">
+      <p style="font-size:1.06rem;color:#6b3060;">
+        mere pyale se babuu, betuu, mella bachaa, mella munna, mella cutu putu...<br><br>
+        mella pyala sa aadat .. babuu tum mere hasne ki wjh ho aise apni bv se baar baar jhagda nhi kiya jata samjhe babuu😘😘😘. tum to mella pyala bachha ho n babuu 😘😘khair ye sab chhodo...tum ye batao??<br><br>
+        <strong style="color:#c0396a;font-size:1.15rem;">will you marry me...?? will you be my husband and i am your wife..?? please say yess....&#x1F48D;</strong><br><br>
+        <em style="font-size:.88rem;color:#b090a8;">(I know you already said yes once but I like asking &#x1F60C;)</em>
+      </p>
+    </div>
+    <div class="btn-group">
+      <button class="btn-yes" onclick="showThankyou()">&#x1F497; YES! Always &amp; Forever!</button>
+      <button class="btn-no"  onclick="showNoWarning4()">No...🤨</button>
+    </div>
+    <div class="no-option-warning" id="warn-4">
+      <strong>&#x1F6AB; NO ka option hi maine nhi rakhaa...😜😜</strong><br>
+      tum already mere sath shadishuda ho aur NO press kar rhe ho.. mujhse door jane ki permission nhi h..aaya samajh..😡😡<br>
+      <strong>chalo yess press karo. &#x1F610; phir...😡😡</strong>
+    </div>
+    <div class="thankyou-box" id="thankyouBox">
+      <div class="stars">&#x2B50;&#x1F495;&#x2B50;</div>
+      <h2 style="color:#c0396a;margin-bottom:14px;">You Said YES!! &#x1F389;</h2>
+      <p style="font-size:1.03rem;color:#30496b;line-height:2;">
+        thankyou for saying yess du..😘😘 &#x1F483;<br><br>
+        Thank you for choosing me, every single day. Thank you for being my husband. Thank you hamare har jhgde ke baad use pyaar se sortout karne ke liye😘😘<br><br>
+        <strong style="color:#c0396a;">I love you so muchh.. mere husband jii for choosing me. ky....aise mat dekho mujhse pyara tumhe koi milega bhi nhi samjhe n ..😜😜 aaye bade..  &#x1F375;</strong><br><br>
+        <em>Always yours, your pyari si wife &#x1F48C;</em>
+      </p>
+      <button class="btn-yes" style="margin-top:22px;" onclick="goNext(4)">See your surprise! &#x1F381;</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- PAGE 5 -->
+<div class="page" id="page-5">
+  <div class="content">
+    <span class="sparkle" style="top:8%;left:5%">&#x2728;</span>
+    <span class="sparkle" style="top:12%;right:7%;animation-delay:.9s">&#x1F338;</span>
+    <span class="heart-icon">&#x1F339;</span>
+    <h1>The End...<br><em style="font-size:.65em">Or is it the beginning?</em></h1>
+    <div class="divider"></div>
+    <div class="glass">
+      <p style="font-size:1.06rem;color:#6b3060;">
+        ab to tum mere ho.. &#x1F38A;<br>
+        yess.. tumhe yes bola to tum ab sirf mere ho.<br>
+        aaj ke bad kisi aur ladki ko nhi dekhna. aree babuu dukhi kyo hote ho ham h n tumhare pass hamesha ke liye..😘😘
+        <br>
+        <em style="color:#b090a8;">(As if you had a choice &#x1F60F;)</em>
+      </p>
+    </div>
+    <div class="love-cards">
+      <div class="love-card"><div class="emoji">&#x1F48C;</div><p>you are the best thing my heart ever found😘😘</p></div>
+      <div class="love-card"><div class="emoji">&#x1F319;</div><p>You are the reason for my smile😍, happiness</p></div>
+      <div class="love-card"><div class="emoji">&#x2600;&#xFE0F;</div><p>your love is my favorite feeling in the world😊</p></div>
+      <div class="love-card"><div class="emoji">&#x1F3E1;</div><p>You are my home,no matter what happens, I always choose you😘</p></div>
+    </div>
+    <div class="glass">
+      <p style="font-family:'Playfair Display',serif;font-style:italic;font-size:1.06rem;color:#7a3060;line-height:2;margin:0;">
+        "you are my today, my tomorrow, and every beautiful forever after.❤️❤️with you, every moment feels magical😘😘😘. buss tum mere pass rhna , mujhse door kabhi mat jana betuu ham hamesha tumharaa dhyan rakhenge..i love u so muchhh..."
+      </p>
+      <p style="font-size:.8rem;color:#b090a8;margin:8px 0 0;">&#x2014;  your pyali si  wife &#x1F495;)</p>
+    </div>
+    <div style="margin-top:24px;font-size:2.1rem;letter-spacing:10px;">&#x1F495;&#x1F339;&#x1F495;&#x1F339;&#x1F495;</div>
+    <button class="btn-yes" style="margin-top:26px;" onclick="goToPage(1)">Start Again &#x1F504;</button>
+  </div>
+</div>
+
+
+<script>
+  var currentPage=1, currentPhoto=0, totalPhotos=18, photoTimer=null;
+  var audio=document.getElementById('bgMusic');
+
+  // Falling petals
+  (function(){
+    var bg=document.getElementById('heartsBg');
+    var sym=['&#x1F495;','&#x1F338;','&#x2728;','&#x1F497;','&#x1F337;','&#x1F4AB;','&#x1F33A;','&#x1F496;'];
+    for(var i=0;i<22;i++){
+      var h=document.createElement('div');
+      h.className='falling-heart';
+      h.innerHTML=sym[Math.floor(Math.random()*sym.length)];
+      h.style.left=Math.random()*100+'%';
+      h.style.fontSize=(10+Math.random()*13)+'px';
+      h.style.animationDuration=(7+Math.random()*9)+'s';
+      h.style.animationDelay=(Math.random()*10)+'s';
+      bg.appendChild(h);
+    }
+  })();
+
+  // Photo dots
+  (function(){
+    var c=document.getElementById('photoDots');
+    for(var i=0;i<totalPhotos;i++){
+      var d=document.createElement('div');
+      d.className='photo-dot'+(i===0?' active':'');
+      (function(idx){d.onclick=function(){goToPhoto(idx);};})(i);
+      c.appendChild(d);
+    }
+  })();
+
+  function goToPhoto(idx){
+    currentPhoto=(idx+totalPhotos)%totalPhotos;
+    var img=document.getElementById('activePhoto');
+    img.style.opacity='0';
+    setTimeout(function(){
+      img.src='photo-'+currentPhoto+'.jpg';
+      img.style.opacity='1';
+    },300);
+    document.querySelectorAll('.photo-dot').forEach(function(d,i){
+      d.classList.toggle('active',i===currentPhoto);
+    });
+    document.getElementById('photoCounter').textContent='Photo '+(currentPhoto+1)+' of '+totalPhotos;
+  }
+
+  function startPhotoTimer(){
+    stopPhotoTimer();
+    photoTimer=setInterval(function(){goToPhoto(currentPhoto+1);},3000);
+  }
+
+  function stopPhotoTimer(){
+    if(photoTimer){clearInterval(photoTimer);photoTimer=null;}
+  }
+
+  function startMusic(){
+    audio.play().then(function(){
+      document.getElementById('musicLabel').textContent='Pal \u2014 Arijit Singh';
+    }).catch(function(){
+      document.getElementById('musicLabel').textContent='Tap \u25B6 to play music';
+    });
+  }
+
+  function toggleMusic(){
+    if(audio.paused){
+      audio.play();
+      document.getElementById('musicLabel').textContent='Pal \u2014 Arijit Singh';
+    } else {
+      audio.pause();
+      document.getElementById('musicLabel').textContent='Music paused \u23F8';
+    }
+  }
+
+  function goNext(from){
+    document.getElementById('page-'+from).classList.remove('active');
+    var next=from+1;
+    document.getElementById('page-'+next).classList.add('active');
+    document.getElementById('dot-'+(from-1)).classList.remove('active');
+    document.getElementById('dot-'+(next-1)).classList.add('active');
+    currentPage=next;
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(next===2){startMusic();}
+    if(next===3){startPhotoTimer();}
+    else{stopPhotoTimer();}
+  }
+
+  function goToPage(page){
+    document.getElementById('page-'+currentPage).classList.remove('active');
+    document.getElementById('dot-'+(currentPage-1)).classList.remove('active');
+    document.getElementById('page-'+page).classList.add('active');
+    document.getElementById('dot-'+(page-1)).classList.add('active');
+    currentPage=page;
+    window.scrollTo({top:0,behavior:'smooth'});
+    if(page===3){startPhotoTimer();}else{stopPhotoTimer();}
+  }
+
+  function showWarning(p){document.getElementById('warn-'+p).style.display='block';}
+
+  function showNoWarning4(){
+    document.getElementById('warn-4').style.display='block';
+    document.getElementById('thankyouBox').style.display='none';
+  }
+
+  function showThankyou(){
+    document.getElementById('warn-4').style.display='none';
+    var b=document.getElementById('thankyouBox');
+    b.style.display='block';
+    setTimeout(function(){b.scrollIntoView({behavior:'smooth',block:'center'});},100);
+  }
+</script>
+</body>
+</html>
